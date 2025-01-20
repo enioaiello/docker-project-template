@@ -1,0 +1,41 @@
+services:
+  web:
+    image: php:8.1-apache
+    container_name: my_php_app
+    ports:
+      - "8080:80" # Redirige le port 80 du conteneur vers le port 8080 de l'hôte
+    volumes:
+      - ./src:/var/www/html # Monte le répertoire local "src" dans le conteneur
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/ # Définit le dossier comme racine
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: my_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: my_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: user
+      PMA_PASSWORD: user_password
+    depends_on:
+      - db
+
+
+volumes:
+  db_data:
